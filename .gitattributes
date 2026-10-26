@@ -1,0 +1,4 @@
+# These pages and assets are byte-for-byte mirrors of the live site, and the
+# deploy target is Linux. Any line-ending translation on checkout would change
+# the bytes that get served, so all of it is disabled.
+* -text

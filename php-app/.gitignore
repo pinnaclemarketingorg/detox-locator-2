@@ -1,0 +1,7 @@
+# Secrets. The real one lives in private_html on the server.
+config.local.php
+config.php
+
+# Lead log, if anyone ever points it inside the webroot by mistake.
+*.log
+*.jsonl
