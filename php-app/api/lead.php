@@ -1,153 +1,109 @@
 <?php
 /**
- * The form's destination.
+ * The benefits form's only destination.
  *
- * The mirrored markup is Gravity's, so the field names arriving here are
- * Gravity's too. One wrinkle: PHP rewrites '.' to '_' in POST keys, so the
- * field Gravity renders as `input_1.3` arrives as `input_1_3`. Both spellings
- * are accepted below rather than relying on that behaviour holding.
- *
- * This is a normal form POST, not fetch(), so the response is a redirect back
- * to the landing page with ?submitted=1 — which is what makes the page render
- * the confirmation block instead of the form.
+ * Two callers. The page script posts JSON and reads back the real outcome;
+ * without JavaScript the form posts normally and gets a 303 back to the page
+ * it came from with ?submitted=1, which renders the confirmation. Either way
+ * this hands the lead to CallTrackingMetrics and logs it.
  *
  * @package dl-locator
  */
 
 declare( strict_types = 1 );
 
-define( 'DL_APP', true );
-
 require_once dirname( __DIR__ ) . '/app/bootstrap.php';
+require_once dirname( __DIR__ ) . '/app/routes.php';
 require_once dirname( __DIR__ ) . '/app/ctm.php';
 
-/** Where to send the visitor afterwards. */
-function dl_return_to( string $slug, bool $ok ): string {
-	$paths = array(
-		'home'       => '/',
-		'lpa-2'      => '/lpa-2/',
-		'lpa-2-dkwi' => '/lpa-2-dkwi/',
-		'lpa-2-dli'  => '/lpa-2-dli/',
-		'lpa-bing'   => '/lpa-bing/',
-	);
-	$path = $paths[ $slug ] ?? '/lpa-2/';
-
-	return $path . ( $ok ? '?submitted=1' : '?submitted=0' ) . '#verify';
-}
-
-/** Read a field, accepting either spelling of a Gravity complex-field key. */
-function dl_field( string ...$keys ): string {
-	foreach ( $keys as $key ) {
-		if ( ! isset( $_POST[ $key ] ) ) {
-			continue;
-		}
-		$value = is_array( $_POST[ $key ] ) ? reset( $_POST[ $key ] ) : $_POST[ $key ];
-		$value = trim( (string) preg_replace( '/[\r\n\t]+/', ' ', (string) $value ) );
-		if ( '' !== $value ) {
-			return $value;
-		}
-	}
-	return '';
-}
-
-function dl_cap( string $value, int $max ): string {
-	return function_exists( 'mb_substr' ) ? mb_substr( $value, 0, $max ) : substr( $value, 0, $max );
-}
+$is_json = str_contains( strtolower( (string) ( $_SERVER['CONTENT_TYPE'] ?? '' ) ), 'application/json' );
 
 if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) {
-	header( 'Location: /lpa-2/', true, 303 );
+	if ( $is_json ) {
+		dl_json( array( 'delivered' => false, 'reason' => 'method' ), 405 );
+	}
+	header( 'Location: /', true, 303 );
 	exit;
 }
 
-$slug = dl_field( 'dl_page' );
-$slug = preg_match( '/^[a-z0-9-]{1,40}$/', $slug ) ? $slug : 'lpa-2';
+$input = $is_json ? json_decode( (string) file_get_contents( 'php://input' ), true ) : $_POST;
+if ( ! is_array( $input ) ) {
+	dl_json( array( 'delivered' => false, 'reason' => 'bad_request' ), 400 );
+}
+
+/** Trim, flatten and cap a field — nothing here should be long. */
+function dl_field( array $src, string $key, int $max = 120 ): string {
+	$value = isset( $src[ $key ] ) && is_scalar( $src[ $key ] ) ? (string) $src[ $key ] : '';
+	$value = trim( (string) preg_replace( '/[\r\n\t]+/', ' ', $value ) );
+	return dl_truncate( $value, $max );
+}
+
+// Only a known route can be a return address, so this is not an open redirect.
+$page = dl_field( $input, 'page', 40 );
+$page = isset( DL_ROUTES[ $page ] ) ? $page : '';
+
+/** Where a no-JS submission lands afterwards. */
+function dl_back( string $page, bool $ok ): void {
+	header( 'Location: /' . ( '' === $page ? '' : $page . '/' ) . '?submitted=' . ( $ok ? '1' : '0' ) . '#verify', true, 303 );
+	exit;
+}
 
 /*
- * Honeypot. A field positioned off-screen and hidden from assistive tech;
- * a human never fills it, most naive bots do. Answer 303 as though it worked
- * so the bot has nothing to learn from the response.
+ * Honeypot: a field hidden from people and from assistive tech. Answer as
+ * though it worked, so a bot has nothing to learn from the response.
  */
-if ( '' !== dl_field( 'dl_hp' ) ) {
-	header( 'Location: ' . dl_return_to( $slug, true ), true, 303 );
-	exit;
+if ( '' !== dl_field( $input, 'company' ) ) {
+	$is_json ? dl_json( array( 'delivered' => true, 'reason' => 'ok' ) ) : dl_back( $page, true );
 }
 
 $lead = array(
-	'first'     => dl_cap( dl_field( 'input_1_3', 'input_1.3' ), 60 ),
-	'last'      => dl_cap( dl_field( 'input_1_6', 'input_1.6' ), 60 ),
-	'phone'     => dl_cap( dl_field( 'input_5' ), 30 ),
-	'dob'       => dl_cap( dl_field( 'input_25' ), 20 ),
-	'insurance' => dl_cap( dl_field( 'input_17' ), 80 ),
-	'policy'    => dl_cap( dl_field( 'input_18' ), 60 ),
-	'consent'   => dl_field( 'input_26_1', 'input_26.1' ),
-	'page'      => $slug,
+	'first'       => dl_field( $input, 'first', 60 ),
+	'last'        => dl_field( $input, 'last', 60 ),
+	'phone'       => dl_field( $input, 'phone', 30 ),
+	'dob'         => dl_field( $input, 'dob', 20 ),
+	'insurance'   => dl_field( $input, 'insurance', 80 ),
+	'policy'      => dl_field( $input, 'policy', 60 ),
+	'consent'     => '' !== dl_field( $input, 'consent', 10 ) ? '1' : '',
+	'looking_for' => dl_field( $input, 'looking_for', 60 ),
+	'page'        => '' === $page ? 'home' : $page,
 );
 
-/*
- * Attribution. Gravity carried these in hidden fields populated by a script
- * that wrote to element IDs; here they come straight off the query string the
- * ad appended, which does not break when a field is reordered.
- */
-/*
- * Attribution.
- *
- * Three sources, in priority order:
- *   1. The form's own posted value.
- *   2. The hidden input_19..input_24 fields the mirrored Gravity form still
- *      carries, for anything already populated client-side.
- *   3. Google/Microsoft ValueTrack parameters under their native spellings
- *      (campaignid, adgroupid, creative) mapped to the names CTM expects.
- */
-$gravity_hidden = array(
-	'gclid'        => 'input_19',
-	'utm_source'   => 'input_20',
-	'utm_medium'   => 'input_21',
-	'utm_campaign' => 'input_22',
-	'utm_content'  => 'input_23',
-	'utm_term'     => 'input_24',
-);
-
-// our name => the query-string spellings to look for, in order
-$sources = array(
-	'gclid'        => array( 'gclid' ),
-	'msclkid'      => array( 'msclkid' ),
-	'utm_source'   => array( 'utm_source' ),
-	'utm_medium'   => array( 'utm_medium' ),
-	'utm_campaign' => array( 'utm_campaign' ),
-	'utm_content'  => array( 'utm_content' ),
-	'utm_term'     => array( 'utm_term' ),
-	'campaign_id'  => array( 'campaign_id', 'campaignid' ),
-	'adgroup_id'   => array( 'adgroup_id', 'adgroupid' ),
-	'creative_id'  => array( 'creative_id', 'creative' ),
-);
-
-$attribution = array();
-foreach ( $sources as $name => $spellings ) {
-	$value = dl_field( ...$spellings );
-
-	if ( '' === $value && isset( $gravity_hidden[ $name ] ) ) {
-		$value = dl_field( $gravity_hidden[ $name ] );
-	}
-
-	if ( '' !== $value ) {
-		$attribution[ $name ] = dl_cap( $value, 300 );
-	}
-}
-
-// Phone is the only field admissions genuinely cannot work without.
+// Phone is the one field admissions genuinely cannot work without.
 if ( '' === dl_normalize_phone( $lead['phone'] ) ) {
-	header( 'Location: ' . dl_return_to( $slug, false ), true, 303 );
-	exit;
+	$is_json ? dl_json( array( 'delivered' => false, 'reason' => 'no_phone' ), 422 ) : dl_back( $page, false );
 }
 
-$result = dl_deliver_lead( $lead, $attribution );
-dl_log_lead( $lead, $result );
+/*
+ * Attribution. The page script snapshots the ad parameters on landing and
+ * sends them as an object; a no-JS post carries them as hidden fields copied
+ * from the query string at render time. ValueTrack's native spellings are
+ * mapped to the names CTM expects.
+ */
+$aliases = array(
+	'gclid' => 'gclid', 'gbraid' => 'gbraid', 'wbraid' => 'wbraid', 'msclkid' => 'msclkid',
+	'utm_source' => 'utm_source', 'utm_medium' => 'utm_medium', 'utm_campaign' => 'utm_campaign',
+	'utm_content' => 'utm_content', 'utm_term' => 'utm_term',
+	'campaign_id' => 'campaign_id', 'campaignid' => 'campaign_id',
+	'adgroup_id' => 'adgroup_id', 'adgroupid' => 'adgroup_id',
+	'creative_id' => 'creative_id', 'creative' => 'creative_id',
+	'landing_page' => 'landing_page', 'referrer' => 'referrer',
+);
+
+$source      = isset( $input['attribution'] ) && is_array( $input['attribution'] ) ? $input['attribution'] : $input;
+$attribution = array();
+foreach ( $aliases as $from => $to ) {
+	if ( isset( $source[ $from ] ) && is_scalar( $source[ $from ] ) && '' !== (string) $source[ $from ] && ! isset( $attribution[ $to ] ) ) {
+		$attribution[ $to ] = dl_truncate( trim( (string) $source[ $from ] ), 300 );
+	}
+}
+
+$result = dl_deliver_lead( $lead, $attribution, dl_field( $input, 'visitor_sid', 120 ) );
+dl_log_lead( $lead + array( 'attribution' => $attribution ), $result );
 
 /*
- * The visitor is told it worked even when CTM rejected it, because the lead
- * is already captured in the log and someone will call them either way.
- * Making them re-type it would lose more enquiries than it saves. The real
- * outcome is in the log and is the thing to alert on.
+ * A no-JS visitor is told it worked even when CTM rejected it: the lead is in
+ * the log and someone will call either way, and making them re-type it loses
+ * more enquiries than it saves. The JSON caller gets the real outcome, which
+ * is what the page reports to GTM.
  */
-header( 'Location: ' . dl_return_to( $slug, true ), true, 303 );
-exit;
+$is_json ? dl_json( $result ) : dl_back( $page, true );

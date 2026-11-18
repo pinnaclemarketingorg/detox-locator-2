@@ -1,0 +1,132 @@
+/* ==========================================================================
+   /lpc/ — Invigorate co-brand. A facility-profile layout: photo hero with a
+   help-line card riding its bottom edge, a sticky anchor bar, profile and
+   form side by side, then overview and reviews.
+   ========================================================================== */
+
+.on-dark { color: #fff; }
+.on-dark h3, .on-dark h4 { color: #fff; }
+
+/* ---------- Header ----------------------------------------------------- */
+.lpc-top { background: #fff; border-bottom: 1px solid var(--line); }
+.lpc-top-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 84px; }
+.lpc-logo { width: clamp(124px, 14vw, 156px); }
+.lpc-top-actions { display: flex; gap: 12px; }
+.lpc-top-actions .btn { min-height: 46px; padding: .6em 1.2em; }
+@media (max-width: 640px) { .lpc-top-verify { display: none; } }
+
+/* ---------- Hero ------------------------------------------------------- */
+.lpc-hero { position: relative; }
+.lpc-hero > img { width: 100%; height: clamp(260px, 36vw, 420px); object-fit: cover; object-position: 50% 40%; }
+.helpline {
+  position: relative; margin: -64px auto 0; max-width: 640px;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px;
+  background: #fff; border-radius: var(--r) var(--r) 0 0; padding: 22px 24px;
+}
+.helpline-title { font-family: var(--display); font-weight: 700; font-size: clamp(1.3rem, 2.2vw, 1.6rem); color: var(--ink); line-height: 1.2; }
+.helpline-sub { color: var(--muted); }
+
+/* ---------- Anchor bar ------------------------------------------------- */
+.tabs { position: sticky; top: 0; z-index: 20; background: var(--mist); border-block: 1px solid var(--line); }
+.tabs .wrap { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.tabs a {
+  flex: none; padding: 14px 16px; color: var(--ink); text-decoration: none; font-weight: 600; font-size: .95rem;
+  border-bottom: 2px solid transparent; transition: border-color .15s ease, color .15s ease;
+}
+.tabs a:hover { border-bottom-color: var(--lav); }
+:target { scroll-margin-top: 64px; }
+
+/* ---------- Profile + form -------------------------------------------- */
+.profile { padding-block: clamp(36px, 5vw, 56px); }
+.profile-grid { display: grid; gap: 36px; align-items: start; }
+@media (min-width: 960px) { .profile-grid { grid-template-columns: 1fr minmax(0, 500px); gap: 64px; } }
+.profile h1 {
+  font-family: var(--body); font-weight: 500; font-size: clamp(1.8rem, 3vw, 2.35rem); color: var(--ink);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;
+}
+.verified { display: inline-flex; align-items: center; gap: 6px; font-size: .95rem; font-weight: 600; color: #2f6fb3; }
+.verified .ic { color: #2f6fb3; }
+.profile .stars { margin-top: 12px; }
+.chips { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 26px 0 22px; font-size: .9rem; color: var(--muted); }
+.chips li { display: inline-flex; align-items: center; gap: 8px; }
+.chips .ic { color: var(--ok); }
+.profile-copy > p { color: var(--muted); max-width: 38rem; }
+.profile-copy > p + p { margin-top: 18px; }
+.lpc .lead { border: 1px solid var(--line); box-shadow: var(--shadow); }
+.lpc .lead-title { text-align: center; }
+.lpc .lead-sub { text-align: center; }
+
+/* ---------- Insurance -------------------------------------------------- */
+.lpc-insurance { padding-bottom: clamp(40px, 5vw, 64px); }
+.ticks { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 32px; margin-bottom: 24px; font-size: .95rem; }
+.ticks li { display: inline-flex; align-items: center; gap: 8px; }
+.ticks .ic { color: var(--violet); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 12px; }
+.tiles img { width: 100%; border-radius: 12px; }
+
+/* ---------- Treatment -------------------------------------------------- */
+.treatment-box {
+  display: grid; gap: 24px 56px; align-items: center;
+  background: var(--lilac); border-radius: var(--r-lg); padding: clamp(28px, 5vw, 56px);
+}
+@media (min-width: 900px) { .treatment-box { grid-template-columns: .8fr 1.2fr; } }
+.treatment-box h2 { font-family: var(--display); font-weight: 700; font-size: clamp(1.8rem, 3vw, 2.4rem); text-align: center; }
+.treatment-box p { color: var(--muted); }
+.treatment-box p + p { margin-top: 16px; }
+.treatment-box .btn { margin-top: 24px; }
+
+/* ---------- Path to recovery ------------------------------------------ */
+.path { background: var(--mist); margin-top: clamp(56px, 7vw, 88px); padding-block: clamp(56px, 7vw, 88px); }
+.path-head { text-align: center; margin-bottom: 36px; }
+.path-head h2 { font-family: var(--display); font-weight: 700; font-size: clamp(1.9rem, 3.4vw, 2.6rem); }
+.path-head p { margin-top: 8px; color: var(--muted); }
+.levels { max-width: 860px; margin-inline: auto; background: var(--ink); border-radius: var(--r-lg); padding: clamp(28px, 5vw, 52px); text-align: center; }
+.levels-title { font-family: var(--display); font-weight: 700; font-size: clamp(1.6rem, 2.6vw, 2rem); margin-bottom: 28px; }
+.level-list { counter-reset: lvl; display: grid; gap: 26px; text-align: left; margin-bottom: 32px; }
+.level-list li { counter-increment: lvl; display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; }
+.level-list li::before {
+  content: counter(lvl); grid-row: span 2;
+  display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
+  background: var(--lav); color: var(--ink); font-weight: 700;
+}
+.level-list h4 { font-size: 1.3rem; font-weight: 600; }
+.level-list p { color: rgba(255, 255, 255, .86); }
+
+/* ---------- Overview --------------------------------------------------- */
+.overview { padding-block: clamp(56px, 7vw, 88px); }
+.overview-title { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 600; font-family: var(--body); margin-bottom: 28px; }
+.overview-title .ic { color: var(--violet); }
+.overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 28px; }
+.overview-grid h3 { font-family: var(--body); font-size: 1rem; font-weight: 700; margin-bottom: 12px; }
+.overview-grid ul { display: grid; gap: 7px; font-size: .95rem; color: var(--muted); }
+.overview-grid li { display: flex; align-items: center; gap: 8px; }
+.overview-grid .ic { color: var(--ok); width: 16px; height: 16px; }
+.gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 44px; }
+.gallery img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: var(--r); }
+
+/* ---------- Reviews ---------------------------------------------------- */
+.reviews { padding-bottom: clamp(56px, 7vw, 88px); }
+.reviews-title {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  background: var(--mist); border-radius: var(--r); padding: 18px; margin-bottom: 26px;
+  font-family: var(--body); font-size: 1.15rem; font-weight: 700;
+}
+.review-grid { columns: 3 300px; column-gap: 18px; }
+.review {
+  break-inside: avoid; margin-bottom: 18px;
+  background: var(--mist); border: 1px solid var(--line); border-radius: var(--r); padding: 22px;
+}
+.review-who { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--ink); }
+.review-who img { border-radius: 50%; }
+.review-verified { color: #2f6fb3; width: 17px; height: 17px; }
+.review .stars { margin: 10px 0 12px; }
+.review blockquote { font-size: .93rem; color: var(--text); }
+.review blockquote p + p { margin-top: 12px; }
+
+/* ---------- Footer ----------------------------------------------------- */
+.lpc-foot { border-top: 1px solid var(--line); padding-top: 36px; }
+.lpc-foot-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; padding-bottom: 28px; }
+.lpc-foot-call { display: flex; flex-direction: column; text-align: right; font-size: .9rem; color: var(--muted); }
+.lpc-foot-call a { font-size: 1.15rem; font-weight: 700; color: var(--ink); text-decoration: none; }
+.lpc-foot-legal { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; border-top: 1px solid var(--line); padding-block: 18px 26px; font-size: .85rem; color: var(--muted); }
+.lpc-foot-legal a { color: var(--muted); margin-left: 16px; }

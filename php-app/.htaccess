@@ -1,71 +1,52 @@
-# Detox Locator — Apache config for the Cloudways Custom PHP app.
-#
-# Two jobs: route every page request through index.php, and make sure the
-# things that are not pages are never served as one.
+# Detox Locator — Apache rules. Cloudways runs Nginx in front of Apache on the
+# Hybrid stack, so this file is honoured. (Lightning is Nginx-only and never
+# reads it — use Hybrid.)
+
+Options -Indexes
 
 <IfModule mod_rewrite.c>
-	RewriteEngine On
+  RewriteEngine On
 
-	# Real files and directories win — that is what serves /assets/.
-	RewriteCond %{REQUEST_FILENAME} -f [OR]
-	RewriteCond %{REQUEST_FILENAME} -d
-	RewriteRule ^ - [L]
+  # One hostname: www redirects to the apex, so the canonical tag and the
+  # address bar always agree. ACME is excluded so certificate renewal for the
+  # www name can still be validated on www.
+  RewriteCond %{REQUEST_URI} !^/\.well-known/
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
 
-	# The form endpoint is a real file and is caught above; everything else
-	# that is not a file becomes a page request.
-	RewriteRule ^ index.php [L]
+  # Page URLs without their trailing slash get one, so each page has exactly
+  # one address. Only for paths that are not real files (assets, the API).
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !\.[a-z0-9]{2,5}$ [NC]
+  RewriteRule ^(.+[^/])$ /$1/ [R=301,L]
+
+  # Everything that is not a real file goes to the front controller, which
+  # renders the page or a 404.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ index.php [L,QSA]
 </IfModule>
 
-# --- never serve the application's innards -------------------------------
-# app/ holds the config loader and the CTM key handling; pages/ holds the
-# templates, which must only ever be reached through index.php.
-RedirectMatch 404 ^/(app|pages|tools)/
-RedirectMatch 404 ^/router\.dev\.php$
-RedirectMatch 404 ^/config\.(sample|local)\.php$
-RedirectMatch 404 /\.git
+# Includes, templates and partials are never requested directly.
+RedirectMatch 404 ^/(app|templates|partials)/
 
-<FilesMatch "\.(md|json|lock|py|sample|local|log|ini)$">
-	Require all denied
+# Never serve config or dev files, wherever one ends up.
+<FilesMatch "^(config\.local\.php|config\.sample\.php|config\.php|router\.dev\.php|.*\.jsonl|.*\.log)$">
+  Require all denied
 </FilesMatch>
 
-# --- security headers -----------------------------------------------------
 <IfModule mod_headers.c>
-	Header always set X-Content-Type-Options "nosniff"
-	Header always set X-Frame-Options "SAMEORIGIN"
-	Header always set Referrer-Policy "strict-origin-when-cross-origin"
-	# Ad landing pages collect names, numbers and policy numbers. HSTS is
-	# appropriate once the domain is confirmed HTTPS-only.
-	Header always set Strict-Transport-Security "max-age=31536000" env=HTTPS
-</IfModule>
-
-# --- caching --------------------------------------------------------------
-# The mirrored assets are content-hashed in their filenames, so they can be
-# cached hard. The pages themselves must not be, because the tracked number
-# and the ?area= / ?submitted= states are per-request.
-<IfModule mod_expires.c>
-	ExpiresActive On
-	ExpiresByType text/css                 "access plus 1 year"
-	ExpiresByType application/javascript   "access plus 1 year"
-	ExpiresByType image/png                "access plus 1 year"
-	ExpiresByType image/jpeg               "access plus 1 year"
-	ExpiresByType image/webp               "access plus 1 year"
-	ExpiresByType image/svg+xml            "access plus 1 year"
-	ExpiresByType font/woff2               "access plus 1 year"
-	ExpiresByType font/woff                "access plus 1 year"
-</IfModule>
-
-<IfModule mod_headers.c>
-	<FilesMatch "\.(css|js|png|jpe?g|webp|svg|woff2?|ttf|eot)$">
-		Header set Cache-Control "public, max-age=31536000, immutable"
-	</FilesMatch>
-	<FilesMatch "^index\.php$">
-		Header set Cache-Control "private, no-cache, max-age=0"
-	</FilesMatch>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  # Assets carry ?v=<mtime>, so they can be cached hard.
+  <FilesMatch "\.(webp|png|svg|ico|woff2|js)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
 </IfModule>
 
 <IfModule mod_deflate.c>
-	AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
 </IfModule>
-
-DirectoryIndex index.php
-Options -Indexes

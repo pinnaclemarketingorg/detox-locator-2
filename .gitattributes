@@ -1,4 +1,9 @@
-# These pages and assets are byte-for-byte mirrors of the live site, and the
-# deploy target is Linux. Any line-ending translation on checkout would change
-# the bytes that get served, so all of it is disabled.
-* -text
+# Text is stored with LF and checked out with LF: the deploy target is Linux,
+# and a CRLF in a PHP file before <?php is output before headers.
+* text=auto eol=lf
+
+*.webp binary
+*.png  binary
+*.jpg  binary
+*.ico  binary
+*.woff2 binary

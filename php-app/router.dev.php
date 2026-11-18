@@ -1,34 +1,27 @@
 <?php
 /**
- * Router for PHP's built-in server. Local preview only.
+ * Dev-only router for `php -S`, mirroring .htaccess so every URL behaves
+ * locally the way it will on Cloudways. Denied by .htaccess; never used live.
  *
- *   cd php-app
- *   php -S localhost:8000 router.dev.php
- *   open http://localhost:8000/lpa-2/
- *
- * The built-in server has no .htaccess, so this reproduces the two rules that
- * matter: serve a real file if one exists, otherwise hand the request to
- * index.php. Denied over HTTP in production by .htaccess.
- *
- * @package dl-locator
+ *   php -S 127.0.0.1:8000 router.dev.php
  */
 
-declare( strict_types = 1 );
+$path = (string) parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH );
 
-$path = (string) parse_url( $_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH );
-$file = __DIR__ . $path;
-
-// Never let the dev server hand out the application's innards.
-if ( preg_match( '#^/(app|pages|tools)/#', $path )
-	|| preg_match( '#/(config\.(sample|local)\.php|router\.dev\.php)$#', $path ) ) {
+if ( preg_match( '#^/(app|templates|partials)/#', $path ) ) {
 	http_response_code( 404 );
-	echo 'Not found.';
 	return true;
 }
 
-// /api/lead.php is a real file and is served directly.
-if ( '' !== $path && '/' !== $path && is_file( $file ) ) {
-	return false; // let the built-in server serve it
+$file = __DIR__ . $path;
+if ( '/' !== $path && is_file( $file ) ) {
+	return false; // let the built-in server serve real files
+}
+
+if ( '/' !== $path && ! str_ends_with( $path, '/' ) && ! preg_match( '/\.[a-z0-9]{2,5}$/i', $path ) ) {
+	$qs = isset( $_SERVER['QUERY_STRING'] ) && '' !== $_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '';
+	header( 'Location: ' . $path . '/' . $qs, true, 301 );
+	return true;
 }
 
 require __DIR__ . '/index.php';

@@ -1,3 +1,8 @@
 # Source captures and the scrapped first attempt — reference only.
 _source/
 _scrapped/
+
+# Google Drive / Windows folder metadata.
+desktop.ini
+Thumbs.db
+__pycache__/
