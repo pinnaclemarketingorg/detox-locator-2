@@ -2,10 +2,11 @@
 /**
  * Landing pages, A family: /lpa-2/, /lpa-2-dkwi/, /lpa-2-dli/, /lpa-bing/.
  *
- * The live design rebuilt section for section: same copy, same order, same
- * colours, icons and entrance animations (data-reveal, app.js §8). The
- * deliberate changes are the benefits form, a call button in the fixed
- * header, and the reviews on an edge-to-edge rail. Variant differences come
+ * The live design rebuilt section for section: same order, same colours,
+ * icons and entrance animations (data-reveal, app.js §8). The deliberate
+ * changes are the benefits form beside the carriers, a call button in the
+ * fixed header, the care section's own heading (live repeated the programs
+ * one), and the reviews as cards on an edge-to-edge rail. Variant differences come
  * from $page (see app/routes.php): the tagline under the H1, the number,
  * and the Bing copy.
  *
@@ -119,8 +120,8 @@ require DL_ROOT . '/partials/lp-header.php';
   <div class="wrap">
     <div class="head">
       <img class="care-mark" src="/assets/img/icons/program-mark.svg" width="62" height="59" alt="" loading="lazy" data-reveal="zoom">
-      <h2 id="care-title" data-reveal="fade">Available Treatment Programs</h2>
-      <p data-reveal="up">Comprehensive Care Options</p>
+      <h2 id="care-title" data-reveal="fade">Care for the Whole Person</h2>
+      <p data-reveal="up">Therapies and Support Beyond Detox</p>
     </div>
     <ul class="care-grid">
       <?php foreach ( $care as $i => $c ) : ?>
@@ -135,57 +136,52 @@ require DL_ROOT . '/partials/lp-header.php';
 </section>
 
 <!-- ================= REVIEWS =================
-     The live photo, overlapping the band, beside the heading and the AI
-     summary; the reviews then run edge to edge beneath. -->
+     The live photo hangs over the band's top edge with the heading at its
+     foot; the reviews run edge to edge beneath as the homepage's cards, the
+     AI summary first and labelled as such. -->
 <section class="stories on-dark" aria-labelledby="stories-title">
   <div class="wrap stories-top">
-    <img class="stories-photo" src="/assets/img/photos/woman-on-phone-560.webp" srcset="/assets/img/photos/woman-on-phone-560.webp 560w, /assets/img/photos/woman-on-phone.webp 900w" sizes="(min-width: 900px) 340px, calc(100vw - 2 * var(--gutter))" width="560" height="801" alt="A smiling woman talking on her phone" loading="lazy">
-    <div class="stories-intro">
-      <h2 id="stories-title" data-reveal="fade">Real Recovery Stories</h2>
+    <img class="stories-photo" src="/assets/img/photos/woman-on-phone-560.webp" srcset="/assets/img/photos/woman-on-phone-560.webp 560w, /assets/img/photos/woman-on-phone.webp 900w" sizes="(min-width: 900px) 300px, calc(100vw - 2 * var(--gutter))" width="560" height="801" alt="A smiling woman talking on her phone" loading="lazy">
+    <div class="stories-intro" data-reveal="fade">
+      <h2 id="stories-title">Real Recovery Stories</h2>
       <img class="google-reviews" src="/assets/img/icons/google-reviews.webp" width="340" height="192" alt="Google Reviews, five stars" loading="lazy">
-      <div class="summary" data-reveal="up">
-        <p class="summary-tag"><img src="/assets/img/icons/ai-logo.webp" width="32" height="32" alt="">AI-Generated Summary<span>Based on Google reviews</span></p>
-        <p><?= e( dl_lp_summary( $page['bing'] ) ) ?></p>
-      </div>
     </div>
-  </div>
-  <div class="wrap stories-nav">
     <div class="rail-btns">
       <button class="rail-btn" type="button" data-rail="prev" aria-controls="stories-rail" aria-label="Previous reviews"><?= dl_icon( 'prev' ) ?></button>
       <button class="rail-btn" type="button" data-rail="next" aria-controls="stories-rail" aria-label="Next reviews"><?= dl_icon( 'next' ) ?></button>
     </div>
   </div>
   <div class="rail rail-bleed" id="stories-rail" tabindex="0" aria-label="Google reviews — scroll for more">
+    <figure class="quote quote-summary">
+      <p class="summary-tag"><?= dl_icon( 'spark' ) ?>AI-generated summary</p>
+      <blockquote><p><?= e( dl_lp_summary( $page['bing'] ) ) ?></p></blockquote>
+      <figcaption><?= dl_google_g( 16 ) ?><span>Based on Google reviews</span></figcaption>
+    </figure>
     <?php foreach ( dl_lp_reviews() as $r ) : ?>
-    <figure class="story">
+    <figure class="quote">
       <?= dl_stars() ?>
       <blockquote><p>“<?= e( $r['quote'] ) ?>”</p></blockquote>
-      <figcaption class="story-who">
-        <img src="/assets/img/icons/g-logo.webp" width="28" height="28" alt="" loading="lazy">
-        <div><p class="story-name"><?= e( $r['name'] ) ?></p><p class="story-src">Based on Google reviews</p></div>
-      </figcaption>
+      <figcaption><?= dl_google_g( 16 ) ?><span><?= e( $r['name'] ) ?></span></figcaption>
     </figure>
     <?php endforeach; ?>
   </div>
 </section>
 
-<!-- ================= INSURANCE ================= -->
+<!-- ================= INSURANCE =================
+     The carriers beside the form, so the logos sit next to the ask. -->
 <section class="insurance" id="insurance" aria-labelledby="insurance-title">
-  <div class="wrap">
-    <div class="head" data-reveal="fade">
-      <h2 id="insurance-title">Verify Your Insurance Coverage <span>No-Cost, No-Obligation Benefits Check</span></h2>
+  <div class="wrap insurance-grid">
+    <div data-reveal="fade">
+      <h2 id="insurance-title">Verify Your Insurance Coverage</h2>
+      <p class="insurance-sub">No-Cost, No-Obligation Benefits Check</p>
       <p>We work with most major PPO insurance providers:</p>
-    </div>
-    <div class="tiles-row">
-      <button class="rail-btn" type="button" data-rail="prev" aria-controls="tiles-rail" aria-label="Previous insurance carriers"><?= dl_icon( 'prev' ) ?></button>
-      <ul class="rail tiles" id="tiles-rail" tabindex="0" aria-label="Insurance carriers — scroll for more">
+      <ul class="tiles">
         <?php foreach ( dl_carrier_tiles() as $c ) : ?>
         <li><img src="/assets/img/carriers-tile/<?= e( $c['file'] ) ?>.webp" width="300" height="185" alt="<?= e( $c['alt'] ) ?>" loading="lazy"></li>
         <?php endforeach; ?>
       </ul>
-      <button class="rail-btn" type="button" data-rail="next" aria-controls="tiles-rail" aria-label="Next insurance carriers"><?= dl_icon( 'next' ) ?></button>
     </div>
-    <div class="insurance-form" id="verify">
+    <div id="verify">
       <?php
       $form = array(
           'id'     => 'lpa-form',

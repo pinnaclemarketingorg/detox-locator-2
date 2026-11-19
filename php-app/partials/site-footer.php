@@ -32,9 +32,7 @@ defined( 'DL_ROOT' ) || exit;
       <div class="site-foot-seals">
         <img src="/assets/img/accreditation/joint-commission.webp" width="96" height="96" alt="The Joint Commission National Quality Approval" loading="lazy">
         <a href="https://www.dhcs.ca.gov/" target="_blank" rel="noopener"><img src="/assets/img/accreditation/dhcs.webp" width="216" height="81" alt="California Department of Health Care Services" loading="lazy"></a>
-        <!-- LegitScript loads from their host and keeps its verification link:
-             that pairing is what substantiates the claim. -->
-        <a href="https://www.legitscript.com/websites/?checker_keywords=detox-locator.com" target="_blank" rel="noopener" title="Verify LegitScript Approval for www.detox-locator.com"><img src="https://static.legitscript.com/seals/43156119.png" width="73" height="79" alt="Verify Approval for detox-locator.com" loading="lazy"></a>
+        <?= dl_legitscript_seal() ?>
       </div>
       <div class="site-foot-license">
         <p>Licensed by the State Department of Health Care Services</p>

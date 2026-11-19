@@ -164,6 +164,8 @@ def accreditation() -> None:
     save_webp(Image.open(SRC / "accreditation" / "joint-commission.webp").convert("RGBA"), IMG / "accreditation" / "joint-commission.webp", 88)
     save_webp(fit_width(Image.open(SRC / "accreditation" / "dhcs.webp").convert("RGBA"), 480), IMG / "accreditation" / "dhcs.webp", 88)
     shutil.copy(SRC / "accreditation" / "dhcs-logo.svg", IMG / "accreditation" / "dhcs-logo.svg")
+    # Stand-in for LegitScript's hosted seal when a blocker stops it loading.
+    save_webp(fit_width(Image.open(SRC / "accreditation" / "legitscript.png").convert("RGBA"), 146), IMG / "accreditation" / "legitscript.webp", 90)
 
 
 def icons() -> None:

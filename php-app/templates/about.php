@@ -167,7 +167,7 @@ require DL_ROOT . '/partials/site-header.php';
         <a class="text-link" href="https://www.dhcs.ca.gov/" target="_blank" rel="noopener">dhcs.ca.gov<?= dl_icon( 'external' ) ?></a>
       </li>
       <li>
-        <a href="https://www.legitscript.com/websites/?checker_keywords=detox-locator.com" target="_blank" rel="noopener" title="Verify LegitScript Approval for www.detox-locator.com"><img src="https://static.legitscript.com/seals/43156119.png" width="73" height="79" alt="Verify Approval for detox-locator.com" loading="lazy"></a>
+        <?= dl_legitscript_seal() ?>
         <h3>LegitScript certified</h3>
         <p>Independently verified to meet advertising and operational standards for addiction treatment.</p>
       </li>
