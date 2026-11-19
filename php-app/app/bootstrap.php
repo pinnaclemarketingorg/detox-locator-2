@@ -69,7 +69,6 @@ function dl_config(): array {
 		// Public by design: the browser sends it to ipinfo.io, exactly as the
 		// live /lpa-2-dli/ did. Restrict it to this domain in the IPInfo dashboard.
 		'ipinfo_token'    => '511d4854a95242',
-		'lead_log'        => '',
 	);
 
 	return $config;

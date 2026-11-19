@@ -59,13 +59,4 @@ return array(
 	 * off and those pages keep the nationwide line.
 	 */
 	'ipinfo_token'    => '511d4854a95242',
-
-	/*
-	 * Strongly recommended. Every submission is appended here as JSON lines,
-	 * so an enquiry still exists if CTM is misconfigured or down. Must be an
-	 * absolute path inside private_html — it holds names, phone numbers,
-	 * dates of birth and policy numbers.
-	 *   e.g. /home/master/applications/<app>/private_html/leads.jsonl
-	 */
-	'lead_log'        => '',
 );

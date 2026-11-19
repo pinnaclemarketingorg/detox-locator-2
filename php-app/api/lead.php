@@ -5,7 +5,7 @@
  * Two callers. The page script posts JSON and reads back the real outcome;
  * without JavaScript the form posts normally and gets a 303 back to the page
  * it came from with ?submitted=1, which renders the confirmation. Either way
- * this hands the lead to CallTrackingMetrics and logs it.
+ * this hands the lead to CallTrackingMetrics. Nothing is stored here.
  *
  * @package dl-locator
  */
@@ -98,12 +98,11 @@ foreach ( $aliases as $from => $to ) {
 }
 
 $result = dl_deliver_lead( $lead, $attribution, dl_field( $input, 'visitor_sid', 120 ) );
-dl_log_lead( $lead + array( 'attribution' => $attribution ), $result );
 
 /*
- * A no-JS visitor is told it worked even when CTM rejected it: the lead is in
- * the log and someone will call either way, and making them re-type it loses
- * more enquiries than it saves. The JSON caller gets the real outcome, which
- * is what the page reports to GTM.
+ * A no-JS visitor sees the confirmation either way: it carries the call
+ * button, and making them re-type the form loses more enquiries than it
+ * saves. The JSON caller gets the real outcome, which the page reports to
+ * GTM.
  */
 $is_json ? dl_json( $result ) : dl_back( $page, true );

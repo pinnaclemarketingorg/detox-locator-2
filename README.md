@@ -86,7 +86,7 @@ tools/
    ```bash
    cd applications/<app>/private_html
    cp ../public_html/php-app/config.sample.php config.php
-   nano config.php      # FormReactor id + key, IPInfo token, lead_log
+   nano config.php      # FormReactor id + key, IPInfo token
    chmod 600 config.php
    ```
    The values from the old app are in `php-app/config.local.php` (gitignored,

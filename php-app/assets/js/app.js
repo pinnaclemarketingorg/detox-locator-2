@@ -198,9 +198,9 @@
             phone.focus();
             return;
           }
-          // Confirm either way: if CTM failed the lead is still in the log
-          // and someone will call. The real outcome goes to GTM, so a silent
-          // CTM outage shows up in GA4 instead of looking like zero demand.
+          // Confirm either way; the confirmation carries the call button.
+          // The real outcome goes to GTM, so a silent CTM outage shows up in
+          // GA4 instead of looking like zero demand.
           track(res.body.delivered
             ? { event: 'generate_lead', form_id: form.id, lead_status: 'delivered' }
             : { event: 'lead_failed', form_id: form.id, lead_status: res.body.reason || 'unknown' });

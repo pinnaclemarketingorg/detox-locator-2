@@ -36,7 +36,8 @@ function dl_normalize_phone( string $raw ): string {
  * Hand a lead to CTM.
  *
  * Returns the real outcome rather than always claiming success, so a
- * misconfiguration shows up in the log instead of silently eating enquiries.
+ * misconfiguration shows up (in GTM as lead_failed, and in the PHP error log)
+ * instead of silently eating enquiries.
  *
  * @param array<string,string> $lead        Normalised field values.
  * @param array<string,string> $attribution gclid / utm_* and friends.
@@ -57,13 +58,16 @@ function dl_deliver_lead( array $lead, array $attribution, string $sid = '' ): a
 	}
 
 	/*
-	 * Field shape follows the FormReactor's own documented POST: phone_number
-	 * at the top level, ad-click data under paid_attribution[], everything
-	 * else under custom_fields[]. The custom field *names* are the ones
-	 * configured on this FormReactor — CTM silently drops a value whose name
-	 * it does not know, which is why these are not renamed to something tidier.
+	 * Field shape follows the FormReactor's own documented POST: the number
+	 * as ten digits with country_code beside it, ad data under
+	 * paid_attribution[], everything else under custom_fields[]. The field
+	 * names match the ones already on this FormReactor, so they land in the
+	 * fields the team reports on.
 	 */
-	$payload = array( 'phone_number' => '+' . $phone );
+	$payload = array(
+		'phone_number' => substr( $phone, 1 ),
+		'country_code' => '1',
+	);
 
 	$name = trim( ( $lead['first'] ?? '' ) . ' ' . ( $lead['last'] ?? '' ) );
 	if ( '' !== $name ) {
@@ -88,11 +92,23 @@ function dl_deliver_lead( array $lead, array $attribution, string $sid = '' ): a
 		'utm_content'   => $attribution['utm_content'] ?? '',
 		'utm_term'      => $attribution['utm_term'] ?? '',
 		'consent'       => ( $lead['consent'] ?? '' ) ? 'yes' : 'no',
+		// Click IDs again, straight off the landing URL: the backstop when
+		// cookies were blocked and there is no session to attach to. These
+		// are what Google needs for offline conversions.
+		'gclid'         => $attribution['gclid'] ?? '',
+		'gbraid'        => $attribution['gbraid'] ?? '',
+		'wbraid'        => $attribution['wbraid'] ?? '',
+		'msclkid'       => $attribution['msclkid'] ?? '',
 	);
 
-	// Click data belongs in paid_attribution: CTM matches it against the ad
-	// platforms, and the same value in the wrong bucket is not attributed.
+	// CTM's Paid Ads panel reads paid_attribution. Sent alongside visitor_sid,
+	// a lead shows two "Paid Ads Data" blocks; that is expected, not a duplicate.
 	$paid = array(
+		'source'       => $attribution['utm_source'] ?? '',
+		'medium'       => $attribution['utm_medium'] ?? '',
+		'campaign'     => $attribution['utm_campaign'] ?? '',
+		'content'      => $attribution['utm_content'] ?? '',
+		'term'         => $attribution['utm_term'] ?? '',
 		'gclid'        => $attribution['gclid'] ?? '',
 		'gbraid'       => $attribution['gbraid'] ?? '',
 		'wbraid'       => $attribution['wbraid'] ?? '',
@@ -220,27 +236,4 @@ function dl_post_form( string $url, array $fields ): ?array {
 	}
 
 	return array( 'status' => $status, 'body' => (string) $out );
-}
-
-/**
- * Append the lead to a JSON-lines file, so an enquiry still exists somewhere
- * if CTM is misconfigured or down. The path must be inside private_html — the
- * log holds names, numbers and policy numbers.
- */
-function dl_log_lead( array $lead, array $result ): void {
-	$path = dl_cfg( 'lead_log' );
-	if ( '' === $path ) {
-		return;
-	}
-
-	$line = json_encode(
-		array(
-			'at'     => gmdate( 'c' ),
-			'page'   => $lead['page'] ?? '',
-			'result' => $result,
-			'lead'   => $lead,
-		)
-	);
-
-	@file_put_contents( $path, $line . "\n", FILE_APPEND | LOCK_EX );
 }

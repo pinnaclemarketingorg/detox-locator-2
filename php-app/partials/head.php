@@ -42,12 +42,14 @@ $ctm     = dl_cfg( 'ctm_account' );
 <link rel="apple-touch-icon" href="/assets/img/favicon/apple-touch-icon.png">
 
 <?php if ( '' !== $ctm ) : ?>
-<!-- CallTrackingMetrics, loaded directly and early: dynamic number insertion
-     needs it before the numbers paint, and window.__ctm has to exist before
-     the form can attach the visitor session. t.js checks readyState and
-     self-starts, so async is safe. Do not route it through GTM. -->
+<!-- CallTrackingMetrics, CTM's own install tag, loaded directly and early:
+     dynamic number insertion needs it before the numbers paint, and
+     window.__ctm has to exist before the form can attach the visitor
+     session. Keep async, and do not route it through GTM. The referrer
+     policy overrides the site's strict-origin header for this one request,
+     so CTM sees the full landing URL with its gclid and utm_* intact. -->
 <link rel="preconnect" href="https://<?= e( $ctm ) ?>.tctm.co">
-<script async src="//<?= e( $ctm ) ?>.tctm.co/t.js"></script>
+<script async src="//<?= e( $ctm ) ?>.tctm.co/t.js" referrerpolicy="no-referrer-when-downgrade"></script>
 <?php endif; ?>
 
 <!-- "fields", the display serif, is an Adobe Fonts kit. Its CSS embed is not
