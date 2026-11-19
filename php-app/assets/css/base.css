@@ -214,8 +214,12 @@ button, a, label, input[type="checkbox"] { touch-action: manipulation; }
   display: grid; grid-auto-flow: column; grid-auto-columns: min(86%, 360px);
   gap: 18px; overflow-x: auto; overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory; scroll-padding-inline: 2px;
-  padding: 4px 2px 18px; scrollbar-width: thin;
+  padding: 4px 2px 8px;
+  /* No scrollbar: every rail has its own arrow buttons, and swipe, trackpad
+     and arrow keys still scroll it. */
+  scrollbar-width: none;
 }
+.rail::-webkit-scrollbar { display: none; }
 .rail > * { scroll-snap-align: start; }
 /* Edge to edge: the rail spans the viewport, and its inline padding (also
    the snap padding) is the distance to the page column, so the first card
