@@ -59,7 +59,6 @@ function dl_config(): array {
 	// means every call after the first sees no defaults at all.
 	$config = $loaded + array(
 		'phone'           => '(888) 367-8846',
-		'phone_home'      => '(888) 891-2240',
 		'phone_bing'      => '(888) 701-3206',
 		'phone_lpc'       => '(866) 913-7063',
 		'ctm_account'     => '374183',

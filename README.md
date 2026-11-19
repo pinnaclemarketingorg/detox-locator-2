@@ -8,9 +8,9 @@ same setup as alcohol-rehab-locator.
 
 | URL | Template | Number | Notes |
 |---|---|---|---|
-| `/` | home | `phone_home` (888) 891-2240 | Menu, programs, residences, reviews, FAQs, form, licensing footer |
-| `/programs/` `/about/` `/contact/` | programs, about, contact | `phone_home` | New. Menu + licensing footer |
-| `/privacy-policy/` `/hipaa-policy/` | policy | `phone_home` | Wording verbatim from the live pages (see below) |
+| `/` | home | `phone` (888) 367-8846 | Menu, programs, residences, reviews, FAQs, form, licensing footer |
+| `/programs/` `/about/` `/contact/` | programs, about, contact | `phone` | New. Menu + licensing footer |
+| `/privacy-policy/` `/hipaa-policy/` | policy | `phone` | Wording verbatim from the live pages (see below) |
 | `/lpa-2/` | lpa | `phone` (888) 367-8846 | The live design, rebuilt, with the new form |
 | `/lpa-2-dkwi/` | lpa | `phone` | `?area=` line, server-rendered |
 | `/lpa-2-dli/` | lpa | `phone` | Visitor's state, from ipinfo.io in the browser |

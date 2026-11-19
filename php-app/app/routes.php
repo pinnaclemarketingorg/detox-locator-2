@@ -29,12 +29,12 @@ defined( 'DL_ROOT' ) || exit;
  */
 const DL_ROUTES = array(
 	// Microsite — the site's own pages, with the menu and licensing footer.
-	''               => array( 'template' => 'home',     'phone' => 'phone_home', 'index' => true ),
-	'programs'       => array( 'template' => 'programs', 'phone' => 'phone_home', 'index' => true ),
-	'about'          => array( 'template' => 'about',    'phone' => 'phone_home', 'index' => true ),
-	'contact'        => array( 'template' => 'contact',  'phone' => 'phone_home', 'index' => true ),
-	'privacy-policy' => array( 'template' => 'policy',   'phone' => 'phone_home', 'index' => true ),
-	'hipaa-policy'   => array( 'template' => 'policy',   'phone' => 'phone_home', 'index' => true ),
+	''               => array( 'template' => 'home',     'phone' => 'phone', 'index' => true ),
+	'programs'       => array( 'template' => 'programs', 'phone' => 'phone', 'index' => true ),
+	'about'          => array( 'template' => 'about',    'phone' => 'phone', 'index' => true ),
+	'contact'        => array( 'template' => 'contact',  'phone' => 'phone', 'index' => true ),
+	'privacy-policy' => array( 'template' => 'policy',   'phone' => 'phone', 'index' => true ),
+	'hipaa-policy'   => array( 'template' => 'policy',   'phone' => 'phone', 'index' => true ),
 
 	// Landing pages, A family — the live design, rebuilt, with a better form.
 	'lpa-2'          => array( 'template' => 'lpa', 'phone' => 'phone',      'mode' => 'static' ),
@@ -68,7 +68,7 @@ function dl_request_slug(): string {
 function dl_resolve_page(): array {
 	$slug  = dl_request_slug();
 	$found = isset( DL_ROUTES[ $slug ] );
-	$route = $found ? DL_ROUTES[ $slug ] : array( 'template' => '404', 'phone' => 'phone_home', 'index' => false );
+	$route = $found ? DL_ROUTES[ $slug ] : array( 'template' => '404', 'phone' => 'phone', 'index' => false );
 
 	$phone = dl_cfg( $route['phone'], dl_cfg( 'phone' ) );
 	$mode  = $route['mode'] ?? 'static';

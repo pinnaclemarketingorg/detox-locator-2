@@ -19,10 +19,11 @@ return array(
 	 * Tracked numbers. Changing one here changes it everywhere on the pages
 	 * that use it — header, buttons, body copy and footer.
 	 *
-	 *   phone       /lpa-2/, /lpa-2-dkwi/, /lpa-2-dli/, /lpd/, /lpd-dkwi/,
-	 *               /lpd-dli/, and /lpc/'s header and footer
+	 *   phone       every page except the Bing ones: the homepage, /programs/,
+	 *               /about/, /contact/, the policies, /lpa-2/, /lpa-2-dkwi/,
+	 *               /lpa-2-dli/, /lpd/, /lpd-dkwi/, /lpd-dli/, and /lpc/'s
+	 *               header and footer
 	 *   phone_bing  /lpa-bing/, /lpd-bing/
-	 *   phone_home  the homepage, /programs/, /about/, /contact/, the policies
 	 *   phone_lpc   /lpc/'s Invigorate help line
 	 *
 	 * The policy pages' own wording contains numbers too; those are part of
@@ -30,7 +31,6 @@ return array(
 	 */
 	'phone'           => '(888) 367-8846',
 	'phone_bing'      => '(888) 701-3206',
-	'phone_home'      => '(888) 891-2240',
 	'phone_lpc'       => '(866) 913-7063',
 
 	/*
