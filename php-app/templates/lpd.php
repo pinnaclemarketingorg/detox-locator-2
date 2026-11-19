@@ -39,7 +39,7 @@ require DL_ROOT . '/partials/head.php';
     <div class="wrap hero-grid">
       <div class="hero-copy">
         <h1>Get connected to quality treatment</h1>
-        <p class="tagline"><span id="tagline" <?= $page['geo'] ? 'data-geo="Find Treatment in {state} in Minutes"' : '' ?>><?= e( $page['tagline'] ) ?></span></p>
+        <p class="tagline"><span id="tagline"<?= dl_geo_attrs( $page ) ?>><?= e( $page['tagline'] ) ?></span></p>
         <div class="hero-ctas">
           <a class="btn btn-light btn-lg" href="<?= e( $page['tel'] ) ?>" data-cta="call-hero"><?= dl_icon( 'phone' ) ?>Call <?= e( $page['phone'] ) ?></a>
         </div>

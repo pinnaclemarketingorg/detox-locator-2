@@ -67,7 +67,9 @@ function dl_config(): array {
 		'ctm_key'         => '',
 		'gtm_id'          => 'GTM-T6QJLCFS',
 		'clarity_id'      => 'q0ni5lkall',
-		'ipinfo_token'    => '',
+		// Public by design: the browser sends it to ipinfo.io, exactly as the
+		// live /lpa-2-dli/ did. Restrict it to this domain in the IPInfo dashboard.
+		'ipinfo_token'    => '511d4854a95242',
 		'lead_log'        => '',
 	);
 
@@ -148,47 +150,16 @@ function dl_clean_place( ?string $raw ): ?string {
 }
 
 /**
- * The visitor's real IPv4 address.
- *
- * Only headers this stack actually sets are trusted. Reading a bare
- * X-Forwarded-For would let a client spoof its own location.
+ * Attributes for the -dli tagline: the template for app.js §4 and the
+ * IPInfo token it calls with. Empty on other pages, or with no token, so
+ * the server-rendered line simply stays.
  */
-function dl_visitor_ip(): ?string {
-	foreach ( array( 'HTTP_CF_CONNECTING_IP', 'HTTP_TRUE_CLIENT_IP', 'REMOTE_ADDR' ) as $header ) {
-		if ( empty( $_SERVER[ $header ] ) ) {
-			continue;
-		}
-		$ip = trim( explode( ',', (string) $_SERVER[ $header ] )[0] );
-		if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) ) {
-			return $ip;
-		}
+function dl_geo_attrs( array $page ): string {
+	$token = (string) dl_cfg( 'ipinfo_token' );
+	if ( empty( $page['geo'] ) || '' === $token ) {
+		return '';
 	}
-	return null;
-}
-
-/**
- * File-backed cache, so a burst of ad clicks costs one upstream call rather
- * than hundreds. No Redis dependency, so it keeps working if the app moves.
- */
-function dl_cache_get( string $key ) {
-	$path = sys_get_temp_dir() . '/dl_' . md5( $key ) . '.cache';
-	if ( ! is_readable( $path ) ) {
-		return null;
-	}
-	$raw = json_decode( (string) file_get_contents( $path ), true );
-	if ( ! is_array( $raw ) || ! isset( $raw['expires'] ) || ! array_key_exists( 'value', $raw ) ) {
-		return null;
-	}
-	if ( $raw['expires'] < time() ) {
-		@unlink( $path );
-		return null;
-	}
-	return $raw['value'];
-}
-
-function dl_cache_set( string $key, $value, int $ttl ): void {
-	$path = sys_get_temp_dir() . '/dl_' . md5( $key ) . '.cache';
-	@file_put_contents( $path, (string) json_encode( array( 'expires' => time() + $ttl, 'value' => $value ) ), LOCK_EX );
+	return ' data-geo="Find Treatment in {state} in Minutes" data-geo-token="' . e( $token ) . '"';
 }
 
 /** Truncate without cutting a multibyte character in half. */

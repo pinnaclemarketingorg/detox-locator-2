@@ -21,7 +21,8 @@ defined( 'DL_ROOT' ) || exit;
  *           area:   "Find Treatment in <area> in Minutes" from ?area=, rendered
  *                   server-side so there is no flash (dynamic keyword insertion)
  *           geo:    the same line from the visitor's state, swapped in after
- *                   paint from /api/region.php (dynamic location insertion)
+ *                   paint by a browser call to ipinfo.io, as the live page
+ *                   did (dynamic location insertion)
  * bing      Bing copy: no "nationwide", no "Detox Locator's partner programs",
  *           and the LegitScript seal in the footer — as on the live /lpa-bing/
  * index     whether search engines should index it

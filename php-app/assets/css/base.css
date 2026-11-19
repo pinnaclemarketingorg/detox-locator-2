@@ -217,6 +217,13 @@ button, a, label, input[type="checkbox"] { touch-action: manipulation; }
   padding: 4px 2px 18px; scrollbar-width: thin;
 }
 .rail > * { scroll-snap-align: start; }
+/* Edge to edge: the rail spans the viewport, and its inline padding (also
+   the snap padding) is the distance to the page column, so the first card
+   starts where the heading does and the rest run off the screen edge. */
+.rail-bleed {
+  --edge: max(var(--gutter), (100% - var(--wrap)) / 2);
+  padding-inline: var(--edge); scroll-padding-inline: var(--edge);
+}
 .rail-btns { display: flex; gap: 10px; }
 .rail-btn {
   display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%;
@@ -225,3 +232,17 @@ button, a, label, input[type="checkbox"] { touch-action: manipulation; }
 }
 .rail-btn:disabled { opacity: .35; cursor: default; }
 .rail-btn .ic { width: 20px; height: 20px; }
+
+/* ---------- Entrance animations -----------------------------------------
+   The live landing pages' Elementor entrances (fadeIn, fadeInUp, zoomIn),
+   played once as each element scrolls in. Hidden only while app.js is
+   expected to run (html.js, cleared by .no-reveal after 3s if it never
+   does), and not at all for reduced motion. */
+html.js:not(.no-reveal) [data-reveal]:not(.is-in) { opacity: 0; }
+html.js:not(.no-reveal) [data-reveal="up"]:not(.is-in) { transform: translateY(28px); }
+html.js:not(.no-reveal) [data-reveal="zoom"]:not(.is-in) { transform: scale(.92); }
+[data-reveal] { transition: opacity .8s ease, transform .8s cubic-bezier(.2, .7, .25, 1); }
+@media (prefers-reduced-motion: reduce) {
+  html.js:not(.no-reveal) [data-reveal]:not(.is-in) { opacity: 1; transform: none; }
+  [data-reveal] { transition: none; }
+}

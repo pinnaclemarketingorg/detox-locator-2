@@ -1,8 +1,8 @@
 <?php
 /**
  * The homepage. Now the site's front door rather than a fifth landing page:
- * menu, programs, the residences, how a call works, reviews, FAQs, the
- * benefits form and the licensing footer.
+ * menu, programs, the residences, how a call works, reviews, the benefits
+ * form, FAQs and the licensing footer.
  *
  * Copy is the live homepage's wherever it had some. The "what happens when
  * you call" steps and the FAQ answers come from Pinnacle Health Group's own
@@ -75,7 +75,7 @@ require DL_ROOT . '/partials/site-header.php';
 <section class="section split">
   <div class="wrap split-grid">
     <figure class="split-media frame-offset">
-      <img src="/assets/img/photos/sunrise.webp" width="412" height="600" alt="A person with arms raised toward a sunrise over open fields" loading="lazy">
+      <img src="/assets/img/photos/residence-view.webp" srcset="/assets/img/photos/residence-view.webp 412w, /assets/img/photos/residence-view-687.webp 687w" sizes="(min-width: 900px) 402px, calc(100vw - 2 * var(--gutter) - 18px)" width="412" height="600" alt="A sunlit lounge at the residence, with floor-to-ceiling windows looking out over Los Angeles" loading="lazy">
     </figure>
     <div class="split-copy">
       <h2 class="h-section">Experience a new life</h2>
@@ -169,51 +169,34 @@ require DL_ROOT . '/partials/site-header.php';
 </section>
 
 <!-- ================= STORIES ================= -->
+<!-- The rail runs edge to edge; its first card lines up with the page
+     column. The AI summary leads it as a card of its own, labelled as such. -->
 <section class="section stories" aria-labelledby="stories-title">
-  <div class="wrap">
-    <div class="stories-top">
-      <div>
-        <h2 class="h-section" id="stories-title">Our success stories</h2>
-        <p class="summary-src"><?= dl_icon( 'spark' ) ?>AI-generated summary, based on Google reviews</p>
-      </div>
-      <div class="rail-btns">
-        <button class="rail-btn" type="button" data-rail="prev" aria-controls="home-rail" aria-label="Previous reviews"><?= dl_icon( 'prev' ) ?></button>
-        <button class="rail-btn" type="button" data-rail="next" aria-controls="home-rail" aria-label="Next reviews"><?= dl_icon( 'next' ) ?></button>
-      </div>
-    </div>
-    <p class="summary"><?= e( dl_home_summary() ) ?></p>
-    <div class="rail" id="home-rail" tabindex="0" aria-label="Google reviews — scroll for more">
-      <?php foreach ( dl_full_reviews() as $r ) : ?>
-      <figure class="quote">
-        <?= dl_stars() ?>
-        <blockquote><?php foreach ( $r['paras'] as $p ) : ?><p><?= e( $p ) ?></p><?php endforeach; ?></blockquote>
-        <figcaption><?= dl_google_g( 16 ) ?><span><?= e( $r['name_home'] ?? $r['name'] ) ?></span></figcaption>
-      </figure>
-      <?php endforeach; ?>
+  <div class="wrap stories-top">
+    <h2 class="h-section" id="stories-title">Our success stories</h2>
+    <div class="rail-btns">
+      <button class="rail-btn" type="button" data-rail="prev" aria-controls="home-rail" aria-label="Previous reviews"><?= dl_icon( 'prev' ) ?></button>
+      <button class="rail-btn" type="button" data-rail="next" aria-controls="home-rail" aria-label="Next reviews"><?= dl_icon( 'next' ) ?></button>
     </div>
   </div>
-</section>
-
-<!-- ================= FAQ ================= -->
-<section class="section tint">
-  <div class="wrap faq-grid">
-    <div>
-      <h2 class="h-section">Questions people ask first</h2>
-      <p class="faq-aside">Not covered here? <a href="<?= e( $page['tel'] ) ?>" data-cta="call-faq">Call <?= e( $page['phone'] ) ?></a> and ask us.</p>
-    </div>
-    <div class="faqs">
-      <?php foreach ( $faqs as $i => $f ) : ?>
-      <details class="faq"<?= 0 === $i ? ' open' : '' ?>>
-        <summary><?= e( $f[0] ) ?></summary>
-        <p><?= e( $f[1] ) ?></p>
-      </details>
-      <?php endforeach; ?>
-    </div>
+  <div class="rail rail-bleed" id="home-rail" tabindex="0" aria-label="Google reviews — scroll for more">
+    <figure class="quote quote-summary">
+      <p class="summary-tag"><?= dl_icon( 'spark' ) ?>AI-generated summary</p>
+      <blockquote><p><?= e( dl_home_summary() ) ?></p></blockquote>
+      <figcaption><?= dl_google_g( 16 ) ?><span>Based on Google reviews</span></figcaption>
+    </figure>
+    <?php foreach ( dl_full_reviews() as $r ) : ?>
+    <figure class="quote">
+      <?= dl_stars() ?>
+      <blockquote><?php foreach ( $r['paras'] as $p ) : ?><p><?= e( $p ) ?></p><?php endforeach; ?></blockquote>
+      <figcaption><?= dl_google_g( 16 ) ?><span><?= e( $r['name_home'] ?? $r['name'] ) ?></span></figcaption>
+    </figure>
+    <?php endforeach; ?>
   </div>
 </section>
 
 <!-- ================= VERIFY ================= -->
-<section class="section verify" id="verify">
+<section class="section tint verify" id="verify">
   <div class="wrap verify-grid">
     <div>
       <h2 class="h-section">Obligation-free insurance verification</h2>
@@ -233,6 +216,24 @@ require DL_ROOT . '/partials/site-header.php';
     );
     require DL_ROOT . '/partials/form.php';
     ?>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section class="section">
+  <div class="wrap faq-grid">
+    <div>
+      <h2 class="h-section">Questions people ask first</h2>
+      <p class="faq-aside">Not covered here? <a href="<?= e( $page['tel'] ) ?>" data-cta="call-faq">Call <?= e( $page['phone'] ) ?></a> and ask us.</p>
+    </div>
+    <div class="faqs">
+      <?php foreach ( $faqs as $i => $f ) : ?>
+      <details class="faq"<?= 0 === $i ? ' open' : '' ?>>
+        <summary><?= e( $f[0] ) ?></summary>
+        <p><?= e( $f[1] ) ?></p>
+      </details>
+      <?php endforeach; ?>
+    </div>
   </div>
 </section>
 

@@ -54,10 +54,11 @@ return array(
 
 	/*
 	 * IPInfo token for the -dli pages' "Find Treatment in <state> in Minutes".
-	 * Used server-side by /api/region.php and never sent to the browser.
-	 * Leave empty and those pages show the nationwide line.
+	 * The visitor's browser calls ipinfo.io with it, as the live page did, so
+	 * it is public. Defaults to the live page's token; '' turns the lookup
+	 * off and those pages keep the nationwide line.
 	 */
-	'ipinfo_token'    => '',
+	'ipinfo_token'    => '511d4854a95242',
 
 	/*
 	 * Strongly recommended. Every submission is appended here as JSON lines,

@@ -148,3 +148,43 @@ function dl_insurance_options(): array {
 		'Highmark', 'Horizon BCBS', 'Medica', 'Providence', 'UMR', 'UnitedHealthcare',
 	);
 }
+
+/**
+ * The team on /about/, from invigoratebh.com/our-team/ (names, credentials,
+ * roles and headshots as published there; the one-liners are condensed from
+ * their bios). No medical director is listed: the Invigorate and Pinnacle
+ * pages name different people, so that waits until someone confirms which.
+ *
+ * `photo` is the file stem in assets/img/team/.
+ *
+ * @return array<int,array{name:string,creds:string,role:string,line:string,photo:string}>
+ */
+function dl_team(): array {
+	return array(
+		array( 'name' => 'Dr. Brandi Jordan', 'creds' => 'Ph.D., LMFT, LAADC', 'role' => 'Chief Operating Officer', 'photo' => 'brandi-jordan',
+			'line' => 'Oversees every clinical and operational team, so care holds one standard from arrival to discharge. Sits on the board of CCAPP.' ),
+		array( 'name' => 'Dr. Arlene Ghahremani', 'creds' => 'Ph.D., LMFT', 'role' => 'Clinical Director', 'photo' => 'arlene-ghahremani',
+			'line' => '“Dr G.” Years in dual-diagnosis programs, and research into relationships and PTSD.' ),
+		array( 'name' => 'Darrin Thibault', 'creds' => 'CADC-I', 'role' => 'Program Director', 'photo' => 'darrin-thibault',
+			'line' => 'Usually the first person you meet at the residence. Found recovery himself after twenty years of addiction.' ),
+		array( 'name' => 'Arin Larson', 'creds' => 'RADT', 'role' => 'Program Director', 'photo' => 'arin-larson',
+			'line' => 'Grew up in Los Angeles, graduated from UCLA, and has worked in treatment since 2018.' ),
+		array( 'name' => 'Jason Phillips', 'creds' => 'LMFT', 'role' => 'Therapist', 'photo' => 'jason-phillips',
+			'line' => 'Individual and group therapy. Certified in trauma-focused CBT, with mindfulness-based relapse prevention.' ),
+		array( 'name' => 'Luz Marquez', 'creds' => 'AMFT', 'role' => 'Therapist', 'photo' => 'luz-marquez',
+			'line' => 'Anxiety, depression, trauma and addiction, using CBT, DBT and motivational interviewing.' ),
+		array( 'name' => 'Marcus Davis', 'creds' => 'RADT', 'role' => 'Case Manager', 'photo' => 'marcus-davis',
+			'line' => 'Fifteen years in addiction, now sober, and guiding others along the path he walked.' ),
+		array( 'name' => 'Connie Johnson', 'creds' => '', 'role' => 'Director of Business Development & Alumni', 'photo' => 'connie-johnson',
+			'line' => 'Sixteen years in behavioral health, with a focus on aftercare and keeping alumni connected.' ),
+	);
+}
+
+/** The admissions counselors: the people who answer the phone. */
+function dl_admissions_team(): array {
+	return array(
+		array( 'name' => 'Seth Holtz', 'photo' => 'seth-holtz' ),
+		array( 'name' => 'Ben Yurchak', 'photo' => 'ben-yurchak' ),
+		array( 'name' => 'Brian Bosley', 'photo' => 'brian-bosley' ),
+	);
+}

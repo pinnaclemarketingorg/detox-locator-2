@@ -84,6 +84,12 @@ if(d.readyState==='complete'){go();}else{w.addEventListener('load',go);}})(windo
 function go(){var t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;var y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);}
 if(l.readyState==='complete'){go();}else{c.addEventListener('load',go);}})(window,document,'clarity','script',<?= json_encode( $clarity ) ?>);</script>
 <?php endif; ?>
+<?php if ( ! empty( $page['geo'] ) && '' !== dl_cfg( 'ipinfo_token' ) ) : ?>
+<link rel="preconnect" href="https://ipinfo.io" crossorigin>
+<?php endif; ?>
+<?php /* Entrance animations hide their elements only under html.js. If
+         app.js has not run 3s in, everything is shown regardless. */ ?>
+<script>document.documentElement.classList.add('js');setTimeout(function(){if(!window.dlReady)document.documentElement.classList.add('no-reveal');},3000);</script>
 <script defer src="<?= e( dl_asset( 'js/app.js' ) ) ?>"></script>
 </head>
 <body class="<?= e( $body_class ?? '' ) ?>">

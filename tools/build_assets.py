@@ -67,7 +67,6 @@ def photos() -> None:
         "woman-on-phone": ("woman-on-phone.jpg", [900, 560]),
         "group-support": ("group-support.webp", [1600, 900]),
         "embrace": ("embrace.webp", [600]),
-        "sunrise": ("sunrise.webp", [412]),
         "facility-exterior": ("IMG_0965.jpg", [1400, 760]),
         "facility-living": ("IMG_0966-1.jpg", [1200, 640]),
         "facility-lounge": ("IMG_0969-1.jpg", [1200, 640]),
@@ -78,6 +77,41 @@ def photos() -> None:
         for i, w in enumerate(widths):
             suffix = "" if i == 0 else f"-{w}"
             save_webp(fit_width(im, w), IMG / "photos" / f"{name}{suffix}.webp", 78)
+
+
+def residence() -> None:
+    """
+    The Mariposa residence, from invigoratebh.com/our-facility/. `crop` is a
+    (width/height ratio, horizontal position 0-1) pair for the portrait cuts.
+    """
+    plan = {
+        # name: (source, [widths], crop)
+        "residence-view": ("Mariposa014.jpg", [412, 687], (412 / 600, 0.85)),
+        "residence-entry": ("Mariposa001.jpg", [1200, 640], None),
+        "residence-great-room": ("Mariposa004.jpg", [1200, 640], None),
+        "residence-dining": ("Mariposa007.jpg", [1200, 640], None),
+        "residence-lounge": ("Mariposa013.jpg", [1200, 640], None),
+        "residence-kitchen": ("Mariposa018.jpg", [1200, 640], None),
+        "residence-hall": ("Mariposa024.jpg", [667, 400], None),
+        "los-angeles": ("los-angeles.jpg", [1600, 900], None),
+    }
+    for name, (src, widths, crop) in plan.items():
+        im = Image.open(SRC / "residence" / src).convert("RGB")
+        if crop:
+            ratio, x = crop
+            w = min(im.width, round(im.height * ratio))
+            left = round((im.width - w) * x)
+            im = im.crop((left, 0, left + w, im.height))
+        for i, w in enumerate(widths):
+            suffix = "" if i == 0 else f"-{w}"
+            save_webp(fit_width(im, w), IMG / "photos" / f"{name}{suffix}.webp", 78)
+
+
+def team() -> None:
+    """Headshots from invigoratebh.com/our-team/, square, shown at up to 200px."""
+    for f in sorted((SRC / "team").glob("*.jpg")):
+        im = Image.open(f).convert("RGB")
+        save_webp(fit_width(im, 400), IMG / "team" / f"{f.stem}.webp", 80)
 
 
 def logos() -> None:
@@ -136,6 +170,12 @@ def icons() -> None:
     for f in sorted((SRC / "icons").glob("*.png")):
         im = Image.open(f).convert("RGBA")
         save_webp(fit_width(im, 160), IMG / "icons" / f"{f.stem}.webp", 88)
+    # The white "Google Reviews" lockup, at full size for 2x screens.
+    save_webp(Image.open(SRC / "icons" / "image-346.png").convert("RGBA"), IMG / "icons" / "google-reviews.webp", 90)
+    # The A pages' line icons and logo mark, as the live page's own SVGs.
+    for f in sorted((SRC / "program-icons").glob("*.svg")):
+        shutil.copy(f, IMG / "icons" / f"program-{f.stem}.svg")
+        print(f"img/icons/program-{f.stem}.svg")
 
 
 def avatars() -> None:
@@ -158,6 +198,8 @@ def fonts() -> None:
 
 if __name__ == "__main__":
     photos()
+    residence()
+    team()
     logos()
     carriers()
     accreditation()

@@ -8,6 +8,8 @@
      4. Location line          -dli pages: "Find Treatment in <state>…"
      5. Site menu              the microsite's mobile nav
      6. CTA events             one dataLayer event per call/verify click
+     7. Landing page header    solid once the page scrolls
+     8. Entrance animations    the live pages' fade/rise/zoom, once each
 
    Nothing personal ever goes into dataLayer. This is an addiction-treatment
    site: names, phone numbers, dates of birth and carriers stay in the POST to
@@ -237,21 +239,20 @@
   });
 
   /* ---------------------------------------------------------------------
-     4. Location line (-dli). The page renders the nationwide fallback, so
-     nothing is blank while this resolves, and a failed or empty lookup
-     just leaves it. textContent only: the region is third-party input.
+     4. Location line (-dli). The live page's own approach: the browser asks
+     ipinfo.io for its region. (A server-side lookup sees Cloudways' proxy,
+     not the visitor.) The nationwide line is already rendered, so a failed
+     or blocked lookup just leaves it. textContent only: third-party input.
      ------------------------------------------------------------------- */
   document.querySelectorAll('[data-geo]').forEach(function (el) {
-    if (!window.fetch || !window.AbortController) return;
-    var ctrl = new AbortController();
-    var timer = setTimeout(function () { ctrl.abort(); }, 2500);
-    fetch('/api/region.php', { signal: ctrl.signal, credentials: 'omit' })
+    var token = el.getAttribute('data-geo-token');
+    if (!token || !window.fetch) return;
+    fetch('https://ipinfo.io/json?token=' + encodeURIComponent(token), { credentials: 'omit' })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
         if (d && d.region) el.textContent = el.getAttribute('data-geo').replace('{state}', d.region);
       })
-      .catch(function () { /* keep the fallback */ })
-      .then(function () { clearTimeout(timer); });
+      .catch(function () { /* keep the fallback */ });
   });
 
   /* ---------------------------------------------------------------------
@@ -282,4 +283,38 @@
     var href = a.getAttribute('href') || '';
     track({ event: href.indexOf('tel:') === 0 ? 'phone_click' : 'cta_click', cta: a.getAttribute('data-cta') });
   });
+
+  /* ---------------------------------------------------------------------
+     7. Landing page header. Fixed; clear over the hero, solid white once
+     the page moves, as on the live pages.
+     ------------------------------------------------------------------- */
+  var lpTop = document.querySelector('[data-lp-top]');
+  if (lpTop) {
+    var setSolid = function () { lpTop.classList.toggle('is-solid', window.scrollY > 24); };
+    window.addEventListener('scroll', setSolid, { passive: true });
+    setSolid();
+  }
+
+  /* ---------------------------------------------------------------------
+     8. Entrance animations. [data-reveal] = fade | up | zoom, and an
+     optional data-reveal-delay in ms for a short stagger. Each plays once
+     as it scrolls in. The head script hides them only when this file will
+     run, and reduced-motion users get everything at once (see base.css).
+     ------------------------------------------------------------------- */
+  var reveals = document.querySelectorAll('[data-reveal]');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        var d = en.target.getAttribute('data-reveal-delay');
+        if (d) en.target.style.transitionDelay = d + 'ms';
+        en.target.classList.add('is-in');
+        io.unobserve(en.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    reveals.forEach(function (el) { io.observe(el); });
+  } else {
+    reveals.forEach(function (el) { el.classList.add('is-in'); });
+  }
+  window.dlReady = true;
 })();
