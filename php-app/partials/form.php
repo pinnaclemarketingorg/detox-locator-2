@@ -11,6 +11,7 @@
  *   button   submit label
  *   heading  heading tag, default h2
  *   class    extra classes on the card
+ *   insurance  optional: prefills the insurance field (still editable)
  *
  * Without JavaScript this is a normal POST to /api/lead.php, which redirects
  * back with ?submitted=1. With it, app.js validates inline, posts JSON, and
@@ -69,7 +70,7 @@ $ad_keys = array( 'gclid', 'gbraid', 'wbraid', 'msclkid', 'utm_source', 'utm_med
       </div>
       <div class="field field-wide">
         <label for="<?= e( $fid ) ?>-ins">Insurance provider</label>
-        <input id="<?= e( $fid ) ?>-ins" name="insurance" list="<?= e( $fid ) ?>-carriers" autocomplete="off" placeholder="Start typing, e.g. Aetna…" required aria-describedby="<?= e( $fid ) ?>-ins-err">
+        <input id="<?= e( $fid ) ?>-ins" name="insurance" list="<?= e( $fid ) ?>-carriers" autocomplete="off" placeholder="Start typing, e.g. Aetna…" value="<?= e( $form['insurance'] ?? '' ) ?>" required aria-describedby="<?= e( $fid ) ?>-ins-err">
         <datalist id="<?= e( $fid ) ?>-carriers">
           <?php foreach ( $options as $o ) : ?><option value="<?= e( $o ) ?>"></option><?php endforeach; ?>
         </datalist>

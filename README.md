@@ -15,6 +15,7 @@ same setup as alcohol-rehab-locator.
 | `/lpa-2-dkwi/` | lpa | `phone` | `?area=` line, server-rendered |
 | `/lpa-2-dli/` | lpa | `phone` | Visitor's state, from ipinfo.io in the browser |
 | `/lpa-bing/` | lpa | `phone_bing` (888) 701-3206 | Bing copy + LegitScript seal, as live |
+| `/lpa-aetna/` `/lpa-cigna/` `/lpa-geha/` `/lpa-highmark/` `/lpa-anthem/` `/lpa-umr/` | lpa | `phone` | `/lpa-2/` plus a "PPO plans accepted" badge with the carrier's logo, a form that asks about that carrier, and its tile first. Add one in `dl_carriers()` and `DL_ROUTES` |
 | `/lpc/` | lpc | `phone`, plus `phone_lpc` (866) 913-7063 on the help line | Invigorate co-brand |
 | `/lpd/` `/lpd-dkwi/` `/lpd-dli/` `/lpd-bing/` | lpd | as their A twins | Same copy as A, modern layout, form in the hero |
 

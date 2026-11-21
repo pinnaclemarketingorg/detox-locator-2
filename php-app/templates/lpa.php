@@ -8,14 +8,15 @@
  * fixed header, the care section's own heading (live repeated the programs
  * one), and the reviews as cards on an edge-to-edge rail. Variant differences come
  * from $page (see app/routes.php): the tagline under the H1, the number,
- * and the Bing copy.
+ * the Bing copy, and on a carrier page the accepted badge and its form.
  *
  * @package dl-locator
  */
 
 defined( 'DL_ROOT' ) || exit;
 
-$title       = 'Your Bridge to Recovery | Detox Locator';
+$carrier     = $page['carrier'];
+$title       = $carrier ? 'Treatment That Accepts ' . $carrier['name'] . ' | Detox Locator' : 'Your Bridge to Recovery | Detox Locator';
 $description = 'Get connected to quality addiction treatment. Same-day admissions, medically-supervised detox and a free, confidential insurance check.';
 $css         = array( 'base.css', 'lpa.css' );
 $preload     = array(
@@ -41,6 +42,12 @@ $care = array(
 	array( 'family', 'Family support and counseling' ),
 );
 
+// A carrier page leads the carrier grid with its own tile.
+$tiles = dl_carrier_tiles();
+if ( $carrier ) {
+	usort( $tiles, fn( $a, $b ) => ( $b['file'] === $carrier['tile'] ) <=> ( $a['file'] === $carrier['tile'] ) );
+}
+
 require DL_ROOT . '/partials/head.php';
 require DL_ROOT . '/partials/lp-header.php';
 ?>
@@ -49,6 +56,12 @@ require DL_ROOT . '/partials/lp-header.php';
 <!-- ================= HERO ================= -->
 <section class="hero">
   <div class="hero-copy">
+    <?php if ( $carrier ) : $mark = dl_carrier_mark( $carrier['mark'] ); ?>
+    <p class="accepted" data-reveal="fade">
+      <img src="/assets/img/carriers/<?= e( $mark['file'] ) ?>.webp" width="<?= (int) $mark['w'] ?>" height="<?= (int) $mark['h'] ?>" style="height:<?= (int) round( $mark['show'] * .8 ) ?>px" alt="<?= e( $carrier['name'] ) ?>">
+      <span><?= dl_icon( 'check' ) ?>PPO plans accepted</span>
+    </p>
+    <?php endif; ?>
     <h1 data-reveal="fade">Get Connected to Quality Treatment</h1>
     <div data-reveal="fade" data-reveal-delay="150">
       <p class="tagline"><span id="tagline"<?= dl_geo_attrs( $page ) ?>><?= e( $page['tagline'] ) ?></span></p>
@@ -176,7 +189,7 @@ require DL_ROOT . '/partials/lp-header.php';
       <p class="insurance-sub">No-Cost, No-Obligation Benefits Check</p>
       <p>We work with most major PPO insurance providers:</p>
       <ul class="tiles">
-        <?php foreach ( dl_carrier_tiles() as $c ) : ?>
+        <?php foreach ( $tiles as $c ) : ?>
         <li><img src="/assets/img/carriers-tile/<?= e( $c['file'] ) ?>.webp" width="300" height="185" alt="<?= e( $c['alt'] ) ?>" loading="lazy"></li>
         <?php endforeach; ?>
       </ul>
@@ -185,9 +198,10 @@ require DL_ROOT . '/partials/lp-header.php';
       <?php
       $form = array(
           'id'     => 'lpa-form',
-          'title'  => 'Check my benefits',
-          'sub'    => 'A specialist reviews your coverage and calls you back.',
-          'button' => 'Verify Insurance Now',
+          'title'     => $carrier ? 'Check my ' . $carrier['name'] . ' benefits' : 'Check my benefits',
+          'sub'       => 'A specialist reviews your coverage and calls you back.',
+          'button'    => 'Verify Insurance Now',
+          'insurance' => $carrier['name'] ?? '',
       );
       require DL_ROOT . '/partials/form.php';
       ?>

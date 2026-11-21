@@ -25,6 +25,8 @@ defined( 'DL_ROOT' ) || exit;
  *                   did (dynamic location insertion)
  * bing      Bing copy: no "nationwide", no "Detox Locator's partner programs",
  *           and the LegitScript seal in the footer — as on the live /lpa-bing/
+ * carrier   a key in dl_carriers(): an "accepted" badge over the headline,
+ *           the form asks about that carrier's benefits, its tile leads
  * index     whether search engines should index it
  */
 const DL_ROUTES = array(
@@ -41,6 +43,14 @@ const DL_ROUTES = array(
 	'lpa-2-dkwi'     => array( 'template' => 'lpa', 'phone' => 'phone',      'mode' => 'area' ),
 	'lpa-2-dli'      => array( 'template' => 'lpa', 'phone' => 'phone',      'mode' => 'geo' ),
 	'lpa-bing'       => array( 'template' => 'lpa', 'phone' => 'phone_bing', 'mode' => 'static', 'bing' => true ),
+
+	// Landing pages, A family, one per carrier.
+	'lpa-aetna'      => array( 'template' => 'lpa', 'phone' => 'phone', 'mode' => 'static', 'carrier' => 'aetna' ),
+	'lpa-cigna'      => array( 'template' => 'lpa', 'phone' => 'phone', 'mode' => 'static', 'carrier' => 'cigna' ),
+	'lpa-geha'       => array( 'template' => 'lpa', 'phone' => 'phone', 'mode' => 'static', 'carrier' => 'geha' ),
+	'lpa-highmark'   => array( 'template' => 'lpa', 'phone' => 'phone', 'mode' => 'static', 'carrier' => 'highmark' ),
+	'lpa-anthem'     => array( 'template' => 'lpa', 'phone' => 'phone', 'mode' => 'static', 'carrier' => 'anthem' ),
+	'lpa-umr'        => array( 'template' => 'lpa', 'phone' => 'phone', 'mode' => 'static', 'carrier' => 'umr' ),
 
 	// Invigorate co-brand.
 	'lpc'            => array( 'template' => 'lpc', 'phone' => 'phone' ),
@@ -63,7 +73,7 @@ function dl_request_slug(): string {
  *
  * @return array{slug:string,template:string,found:bool,phone:string,tel:string,
  *               mode:string,bing:bool,tagline:string,place:?string,geo:bool,
- *               index:bool,canonical:string}
+ *               carrier:?array,index:bool,canonical:string}
  */
 function dl_resolve_page(): array {
 	$slug  = dl_request_slug();
@@ -85,6 +95,7 @@ function dl_resolve_page(): array {
 		'tagline'   => $bing ? 'Find Treatment in Minutes' : 'Find Treatment Nationwide in Minutes',
 		'place'     => null,
 		'geo'       => 'geo' === $mode,
+		'carrier'   => dl_carriers()[ $route['carrier'] ?? '' ] ?? null,
 		// Ad destinations stay out of the index: they are near-duplicates of
 		// one another, and indexing the Bing variant would leak its number
 		// into Google. Ad platforms fetch the URL directly either way.

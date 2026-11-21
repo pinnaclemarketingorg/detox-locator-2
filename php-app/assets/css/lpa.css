@@ -69,6 +69,16 @@ html:not(.js) .lp-top, .lp-top.is-solid { background: #fff; box-shadow: 0 1px 0 
   .hero-media img { height: 84%; }
 }
 
+/* The carrier pages' one cue: a quiet badge over the headline. */
+.accepted {
+  display: inline-flex; align-items: center; gap: 12px; margin-bottom: 22px;
+  padding: 8px 16px 8px 14px; background: #fff; border: 1px solid var(--line); border-radius: 999px;
+}
+.accepted img { width: auto; }
+.accepted span { display: inline-flex; align-items: center; gap: 6px; padding-left: 12px; border-left: 1px solid var(--line); font-size: .88rem; font-weight: 600; color: var(--ink); }
+.accepted .ic { width: 15px; height: 15px; color: #1f8a4c; stroke-width: 2.4; }
+@media (min-width: 900px) { .hero-copy:has(.accepted) { padding-top: 136px; } }
+
 /* ---------- First step ------------------------------------------------- */
 .first-step { background: var(--ink); padding-block: clamp(56px, 6vw, 90px); overflow: hidden; }
 .first-step-grid { display: grid; gap: 40px; align-items: center; }

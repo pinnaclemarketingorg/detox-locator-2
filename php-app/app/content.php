@@ -96,6 +96,33 @@ function dl_full_reviews(): array {
 }
 
 /**
+ * Carriers with a landing page of their own (/lpa-<slug>/). `mark` is the
+ * file in dl_carrier_marks(), `tile` the one in dl_carrier_tiles().
+ *
+ * @return array<string,array{name:string,mark:string,tile:string}>
+ */
+function dl_carriers(): array {
+	return array(
+		'aetna'    => array( 'name' => 'Aetna', 'mark' => 'aetna', 'tile' => 'aetna' ),
+		'cigna'    => array( 'name' => 'Cigna', 'mark' => 'cigna', 'tile' => 'cigna' ),
+		'geha'     => array( 'name' => 'GEHA', 'mark' => 'geha', 'tile' => 'geha' ),
+		'highmark' => array( 'name' => 'Highmark', 'mark' => 'highmark', 'tile' => 'highmark' ),
+		'anthem'   => array( 'name' => 'Anthem', 'mark' => 'anthem', 'tile' => 'anthem' ),
+		'umr'      => array( 'name' => 'UMR', 'mark' => 'umr', 'tile' => 'umr' ),
+	);
+}
+
+/** One carrier's mark from dl_carrier_marks(), or null. */
+function dl_carrier_mark( string $file ): ?array {
+	foreach ( dl_carrier_marks() as $m ) {
+		if ( $m['file'] === $file ) {
+			return $m;
+		}
+	}
+	return null;
+}
+
+/**
  * Carrier tiles, as the live landing pages show them (logo on a tinted card).
  *
  * @return array<int,array{file:string,alt:string}>
